@@ -48,6 +48,7 @@
 </head>
 
 <body onload="javascript:getQuestions()">
+
     <h2 id="finalScore">Welcome to this timed trivia quiz</h2>
     <div class="info">
         There are 10 questions each with 4 possible answers.<br>
@@ -69,7 +70,7 @@
     </div>
 
     <script>
-        let quizes = [];
+        let quizzes = [];
         let totalScore = 0;
         let question = 0;
         const questionNumber = document.getElementById("qustionNumber");
@@ -81,19 +82,16 @@
         const finalScore = document.getElementById("finalScore");
 
         function nextQuestion() {
-
-            /* fetch(`/quiz/${question}`)
-                .then((response) => response.json())
-                .then((quiz) => { */
-
-            const quiz = quizes[question];
+            const quiz = quizzes[question];
             button.className = "visible";
             let correctAnswerUsed = 0;
             let chosenAnswer = false;
-            //showScore.innerText = totalScore;
+
             questionNumber.innerText = "\n" + "Question number " + (question + 1) + " (Press 1,2,3,4)";
+            showScore.innerText = totalScore;
             quizBody.innerText = "\n" + removeQuotes(JSON.stringify(quiz.question));
 
+            // randomize position of correct answer in the list
             const correctAnswer = Math.floor(1 + Math.random() * 4);
             for (let i = 1; i < 5; i++) {
                 let identifier = "\n" + (i) + ": ";
@@ -118,7 +116,7 @@
             }, 1000);
 
             waitForKeyPress().then((pressedKey) => {
-                clearInterval(t);
+                clearInterval(t); // stop timer if 1,2,3,4 pressed
                 if (pressedKey == correctAnswer) {
                     chosenAnswer = true;
                 }
@@ -141,6 +139,7 @@
             })
         }
 
+        // checks for 1,2,3,4 pressed and returns that as a promise
         function waitForKeyPress() {
             return new Promise((resolve) => {
                 document.addEventListener('keydown', function (event) {
@@ -148,25 +147,23 @@
                     if (['1', '2', '3', '4'].includes(keyPressed)) {
                         resolve(keyPressed);
                         document.removeEventListener('keydown', this);
-                    } else {
-                        document.removeEventListener('keydown', this);
                     }
                 });
             });
         }
 
         function removeQuotes(string) {
-            console.log(string);
             const length = string.length;
-            return string.substring(1, length - 1);
+            return string.substring(1, length - 1); // sure this could be refactored
         }
 
+        // Locally we fetch server side with node-fetch and then call our own API
+        // But couldn't deploy to vercel with modules and imports :(
         function getQuestions() {
-            quizes = [{ "category": "History", "id": "622a1c347cc59eab6f94f9a2", "correctAnswer": "George III", "incorrectAnswers": ["Henry I", "Edward II", "Anne"], "question": "Who was the monarch of The United Kingdom during the time period 1760-1820?", "tags": ["kings", "uk", "history"], "type": "Multiple Choice", "difficulty": "hard", "regions": [], "isNiche": false }, { "category": "Science", "id": "622a1c3a7cc59eab6f950fef", "correctAnswer": "Sciatic nerve", "incorrectAnswers": ["Optic nerve", "Lumbar plexus", "Ulnar nerve"], "question": "Which is the largest nerve in the Human Body?", "tags": ["science"], "type": "Multiple Choice", "difficulty": "hard", "regions": [], "isNiche": false }, { "category": "Science", "id": "624333cfcfaae40c12961406", "correctAnswer": "A Cow", "incorrectAnswers": ["A Sow", "A Doe", "A Pen"], "question": "What would you call a female elephant?", "tags": ["science"], "type": "Multiple Choice", "difficulty": "hard", "regions": [], "isNiche": false }, { "category": "Geography", "id": "623387420161109f922aac12", "correctAnswer": "The UK", "incorrectAnswers": ["The USA", "Argentina", "France"], "question": "Which country administers South Georgia, a last stop before Antarctica?", "tags": ["geography"], "type": "Multiple Choice", "difficulty": "medium", "regions": [], "isNiche": false }, { "category": "Science", "id": "63f3950b989356ef48370bf4", "correctAnswer": "Mercury", "incorrectAnswers": ["Venus", "Earth", "Mars"], "question": "Which is the smallest planet in the Solar System?", "tags": ["science", "space", "the_solar_system", "astrophysics"], "type": "Multiple Choice", "difficulty": "hard", "regions": [], "isNiche": false }, { "category": "Food & Drink", "id": "622a1c367cc59eab6f9502ba", "correctAnswer": "German Bread ", "incorrectAnswers": ["Belgian Wheat Beer", "Dutch Cheese", "Danish Butter"], "question": "What is pumpernickel?", "tags": ["food_and_drink"], "type": "Multiple Choice", "difficulty": "medium", "regions": [], "isNiche": false }, { "category": "History", "id": "622a1c3d7cc59eab6f951bf2", "correctAnswer": "Augustus", "incorrectAnswers": ["Nero", "Herod", "Pilate"], "question": "Who ruled Rome when Christ was born?", "tags": ["romans", "christianity", "classics", "history"], "type": "Multiple Choice", "difficulty": "hard", "regions": [], "isNiche": false }, { "category": "Arts & Literature", "id": "622a1c397cc59eab6f950f3a", "correctAnswer": "J. R. R. Tolkien", "incorrectAnswers": ["G. K. Chesterton", "Philip Pullman", "C. S. Lewis"], "question": "Which author wrote 'The History of Middle-earth'?", "tags": ["arts_and_literature"], "type": "Multiple Choice", "difficulty": "easy", "regions": [], "isNiche": false }, { "category": "Food & Drink", "id": "622a1c367cc59eab6f95025f", "correctAnswer": "Austria ", "incorrectAnswers": ["Germany", "Belgium", "Switzerland"], "question": "'Sachertorte' is a chocolate cake from which country? ", "tags": ["food_and_drink"], "type": "Multiple Choice", "difficulty": "hard", "regions": [], "isNiche": false }, { "category": "Society & Culture", "id": "622a1c3a7cc59eab6f95108d", "correctAnswer": "Elephant", "incorrectAnswers": ["Lion", "Rhino", "Donkey"], "question": "Which animal is the symbol of the U.S. Republican Party?", "tags": ["society_and_culture"], "type": "Multiple Choice", "difficulty": "medium", "regions": [], "isNiche": false }];
             fetch(`https://the-trivia-api.com/api/questions?limit=10`)
                 .then((response) => response.json())
                 .then((result) => {
-                    quizes = result;
+                    quizzes = result;
                 })
         }
     </script>
