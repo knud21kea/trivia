@@ -88,7 +88,7 @@
             let chosenAnswer = false;
 
             questionNumber.innerText = "\n" + "Question number " + (question + 1) + " (Press 1,2,3,4)";
-            showScore.innerText = totalScore;
+            questionTimer.innerText = `Remaining time: 30`;
             quizBody.innerText = "\n" + removeQuotes(JSON.stringify(quiz.question));
 
             // randomize position of correct answer in the list
